@@ -35,3 +35,9 @@ class User(UserBase):
         max_length=50
     )
     birth_date : Optional[date] = Field(...)
+
+class UserRegister(User):
+    password : str = Field(
+        ...,
+        min_length=8
+    )
