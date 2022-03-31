@@ -1,5 +1,5 @@
 #Imports
-from User import User
+from models.User import User
 
 #Python
 from uuid import UUID
