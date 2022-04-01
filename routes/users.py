@@ -50,7 +50,6 @@ def signup(user: UserRegister = Body(...)):
         f.write(json.dumps(results))
         return user
 
-
 @UserRouter.post(
     path='/login',
     response_model=User,
