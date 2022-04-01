@@ -131,5 +131,24 @@ def delete_a_tweet(tweet_id:UUID):
     summary="Update a Tweet",
     tags=["Tweets"]
 )
-def update_a_tweet():
-    pass
+def update_a_tweet(tweet_id:UUID,tweet: Tweet = Body(...)):
+    with open("tweets.json", "r+", encoding="utf-8") as f:
+        tweet_dict = tweet.dict()
+        tweet_dict["tweet_id"] = str(tweet_dict["tweet_id"])
+        tweet_dict["created_at"] = str(tweet_dict["created_at"])
+        tweet_dict["update_at"] = str(tweet_dict["update_at"])
+        tweet_dict['by']['user_id'] = str(tweet_dict['by']['user_id'])
+        tweet_dict['by']['birth_date'] = str(tweet_dict['by']['birth_date'])
+
+        results = json.loads(f.read())
+        results = list(filter(lambda tweet_dict: tweet_dict['tweet_id'] != str(tweet_id), results))
+        results.append(tweet_dict)
+
+        list_seach_tweet = seach_tweet(tweet_id)
+
+        if not list_seach_tweet:
+            raise HTTPException(status_code=404, detail="Tweet not found")
+
+        seach_tweet_found = list_seach_tweet[0]
+        save_in_json(results)
+        return seach_tweet_found
