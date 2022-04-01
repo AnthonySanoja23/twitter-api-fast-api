@@ -15,13 +15,28 @@ TweetRouter = APIRouter()
 
 @TweetRouter.get(
     path='/',
-    response_model=Tweet,
+    response_model=List[Tweet],
     status_code = status.HTTP_200_OK,
     summary="Show all Tweets",
     tags=["Tweets"]
 )
 def home():
-    return {"all":"tweets"}
+    """
+    This path operation shows all tweet in the app 
+
+    Parameters: 
+        -
+    
+    Returns a json list with all tweet in the app, with the followin keys :
+        - tweet_id : UUID
+        - content: str 
+        - created_at: datetime 
+        - update_at: Optional[datetime] 
+        - by: User
+    """
+    with open("tweets.json", "r", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        return results
 
 @TweetRouter.post(
     path='/post',
