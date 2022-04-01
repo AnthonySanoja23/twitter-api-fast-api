@@ -16,14 +16,13 @@ UserRouter = APIRouter()
 def seach_user(user_id):
     with open("users.json", "r", encoding="utf-8") as f:
         results = json.loads(f.read())
-        seach_user = filter(lambda user: user['user_id'] == str(user_id), results)
-        list_seach_user = list(seach_user)
-        return list_seach_user
+        seach_user = list(filter(lambda user: user['user_id'] == str(user_id), results))
+        return seach_user
 
 def save_in_json(users):
-	datos = json.dumps(users)
+	data = json.dumps(users)
 	f = open('users.json','w')
-	f.write(datos)
+	f.write(data)
 	f.close()   
 
 # Path Operations 
@@ -121,7 +120,7 @@ def show_a_user(user_id:UUID):
 def delete_user(user_id:UUID):
     with open("users.json", "r+", encoding="utf-8") as f:
         results = results = json.loads(f.read())
-        results = list(filter(lambda user: user['user_id'] != "3fa85f64-5717-4562-b3fc-2c963f66afa1", results))
+        results = list(filter(lambda user: user['user_id'] != str(user_id), results))
         list_seach_user = seach_user(user_id)
         if not list_seach_user:
             raise HTTPException(status_code=404, detail="User not found")

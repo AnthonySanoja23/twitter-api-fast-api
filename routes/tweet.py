@@ -13,6 +13,18 @@ from fastapi import HTTPException
 
 TweetRouter = APIRouter()
 
+def seach_tweet(tweet_id):
+    with open("tweets.json", "r", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        seach_tweet = list(filter(lambda tweet: tweet['tweet_id'] == str(tweet_id), results))
+        return seach_tweet
+
+def save_in_json(tweets):
+	data = json.dumps(tweets)
+	f = open('tweets.json','w')
+	f.write(data)
+	f.close()  
+
 # Path Operations
 
 @TweetRouter.get(
@@ -94,7 +106,6 @@ def show_a_tweet(tweet_id:UUID):
         tweet_found = list_seach_tweet[0]
         return tweet_found
     
-
 @TweetRouter.delete(
     path='/tweets/{tweet_id}/delete',
     response_model=Tweet,
@@ -102,8 +113,16 @@ def show_a_tweet(tweet_id:UUID):
     summary="Delete a Tweet",
     tags=["Tweets"]
 )
-def delete_a_tweet():
-    pass
+def delete_a_tweet(tweet_id:UUID):
+    with open("tweets.json", "r+", encoding="utf-8") as f:
+        results = results = json.loads(f.read())
+        results = list(filter(lambda tweet: tweet['tweet_id'] != str(tweet_id), results))
+        list_seach_tweet = seach_tweet(tweet_id)
+        if not list_seach_tweet:
+            raise HTTPException(status_code=404, detail="Tweet not found")
+        seach_tweet_found = list_seach_tweet[0]
+        save_in_json(results)
+        return seach_tweet_found
 
 @TweetRouter.put(
     path='/tweets/{tweet_id}/update',
