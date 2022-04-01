@@ -13,9 +13,20 @@ from fastapi import HTTPException
 
 UserRouter = APIRouter()
 
-# Path Operations 
+def seach_user(user_id):
+    with open("users.json", "r", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        seach_user = filter(lambda user: user['user_id'] == str(user_id), results)
+        list_seach_user = list(seach_user)
+        return list_seach_user
 
-## Users
+def save_in_json(users):
+	datos = json.dumps(users)
+	f = open('users.json','w')
+	f.write(datos)
+	f.close()   
+
+# Path Operations 
 @UserRouter.post(
     path='/signup',
     response_model=User,
@@ -93,14 +104,12 @@ def show_all_users():
     tags=["Users"]
 )
 def show_a_user(user_id:UUID):
-    with open("users.json", "r", encoding="utf-8") as f:
-        results = json.loads(f.read())
-        seach_user = filter(lambda user: user['user_id'] == str(user_id), results)
-        list_seach_user = list(seach_user)
-        if not list_seach_user:
-            raise HTTPException(status_code=404, detail="User not found")
-        tweet_found = list_seach_user[0]
-        return tweet_found
+    list_seach_user = seach_user(user_id)
+    if not list_seach_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    seach_user_found = list_seach_user[0]
+    return seach_user_found
+
 
 @UserRouter.delete(
     path='/users/{user_id}/delete',
@@ -109,8 +118,17 @@ def show_a_user(user_id:UUID):
     summary="Delte a User",
     tags=["Users"]
 )
-def delete_user():
-    pass
+def delete_user(user_id:UUID):
+    with open("users.json", "r+", encoding="utf-8") as f:
+        results = results = json.loads(f.read())
+        results = list(filter(lambda user: user['user_id'] != "3fa85f64-5717-4562-b3fc-2c963f66afa1", results))
+        list_seach_user = seach_user(user_id)
+        if not list_seach_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        seach_user_found = list_seach_user[0]
+        save_in_json(results)
+        return seach_user_found
+
 
 @UserRouter.put(
     path='/users/{user_id}/update',
