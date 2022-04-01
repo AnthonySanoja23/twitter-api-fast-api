@@ -1,12 +1,14 @@
 #Python
 import json
 from unittest import result
+from uuid import UUID
 from models.User import User, UserRegister
 from typing import Optional, List
 
 #FastApi
 from fastapi import APIRouter, Body
 from fastapi import status
+from fastapi import HTTPException
 
 
 UserRouter = APIRouter()
@@ -91,8 +93,15 @@ def show_all_users():
     summary="Show a user",
     tags=["Users"]
 )
-def show_a_user():
-    pass
+def show_a_user(user_id:UUID):
+    with open("users.json", "r", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        seach_user = filter(lambda user: user['user_id'] == str(user_id), results)
+        list_seach_user = list(seach_user)
+        if not list_seach_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        tweet_found = list_seach_user[0]
+        return tweet_found
 
 @UserRouter.delete(
     path='/users/{user_id}/delete',
