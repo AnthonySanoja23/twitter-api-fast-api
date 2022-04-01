@@ -12,7 +12,7 @@ from pydantic import Field
 
 
 class Tweet(BaseModel):
-    tweet_id: UUID = Field(...)
+    tweet_id : UUID = Field(...)
     content: str = Field(
         ...,
         min_length=1,

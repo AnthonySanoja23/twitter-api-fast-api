@@ -1,10 +1,12 @@
 #Python
+import json
 from models.Tweet import Tweet
 from typing import List
 
 #FastApi
 from fastapi import APIRouter
 from fastapi import status
+from fastapi import Body
 
 
 TweetRouter = APIRouter()
@@ -28,8 +30,35 @@ def home():
     summary="Post a Tweet",
     tags=["Tweets"]
 )
-def post():
-    pass
+def post(tweet: Tweet = Body(...)):
+    """
+    Post Tweet 
+
+    This path operation register a tweet in the app
+
+    Parameteres:
+        -Request body parameter
+            -tweet: Tweet
+    
+    Returns a json with the basic tweet information:
+        tweet_id: UUID
+        content: str 
+        created_at: datetime 
+        update_at: Optional[datetime] 
+        by: User
+    """
+    with open("tweets.json","r+", encoding="utf-8") as f :
+        results = json.loads(f.read())
+        tweet_dict = tweet.dict()
+        tweet_dict["tweet_id"] = str(tweet_dict["tweet_id"])
+        tweet_dict["created_at"] = str(tweet_dict["created_at"])
+        tweet_dict["update_at"] = str(tweet_dict["update_at"])
+        tweet_dict['by']['user_id'] = str(tweet_dict['by']['user_id'])
+        tweet_dict['by']['birth_date'] = str(tweet_dict['by']['birth_date'])
+        results.append(tweet_dict)
+        f.seek(0)
+        f.write(json.dumps(results))
+        return tweet
 
 @TweetRouter.get(
     path='/tweets/{tweet_id}',
