@@ -2,11 +2,13 @@
 import json
 from models.Tweet import Tweet
 from typing import List
+from uuid import UUID
 
 #FastApi
 from fastapi import APIRouter
 from fastapi import status
 from fastapi import Body
+from fastapi import HTTPException
 
 
 TweetRouter = APIRouter()
@@ -82,8 +84,16 @@ def post(tweet: Tweet = Body(...)):
     summary="show a Tweet",
     tags=["Tweets"]
 )
-def show_a_tweet():
-    pass
+def show_a_tweet(tweet_id:UUID):
+    with open("tweets.json", "r", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        seach_tweet = filter(lambda tweet: tweet['tweet_id'] == str(tweet_id), results)
+        list_seach_tweet = list(seach_tweet)
+        if not list_seach_tweet:
+            raise HTTPException(status_code=404, detail="Tweet not found")
+        tweet_found = list_seach_tweet[0]
+        return tweet_found
+    
 
 @TweetRouter.delete(
     path='/tweets/{tweet_id}/delete',
