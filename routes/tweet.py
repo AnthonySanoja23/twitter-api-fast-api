@@ -115,7 +115,7 @@ def show_a_tweet(tweet_id:UUID):
 )
 def delete_a_tweet(tweet_id:UUID):
     with open("tweets.json", "r+", encoding="utf-8") as f:
-        results = results = json.loads(f.read())
+        results = json.loads(f.read())
         results = list(filter(lambda tweet: tweet['tweet_id'] != str(tweet_id), results))
         list_seach_tweet = seach_tweet(tweet_id)
         if not list_seach_tweet:

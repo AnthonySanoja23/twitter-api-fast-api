@@ -1,6 +1,5 @@
 #Python
 import json
-from unittest import result
 from uuid import UUID
 from models.User import User, UserRegister
 from typing import Optional, List
@@ -119,7 +118,7 @@ def show_a_user(user_id:UUID):
 )
 def delete_user(user_id:UUID):
     with open("users.json", "r+", encoding="utf-8") as f:
-        results = results = json.loads(f.read())
+        results = json.loads(f.read())
         results = list(filter(lambda user: user['user_id'] != str(user_id), results))
         list_seach_user = seach_user(user_id)
         if not list_seach_user:
@@ -136,5 +135,20 @@ def delete_user(user_id:UUID):
     summary="Update a User",
     tags=["Users"]
 )
-def update_user():
-    pass
+def update_user(user_id:UUID,user: UserRegister = Body(...)):
+    with open("users.json", "r+", encoding="utf-8") as f:
+        user_dict = user.dict()
+        user_dict["user_id"] = str(user_dict["user_id"])
+        user_dict["birth_date"] = str(user_dict["birth_date"])
+        results = json.loads(f.read())
+        results = list(filter(lambda user_dict: user_dict['user_id'] != str(user_id), results))
+        results.append(user_dict)
+        list_seach_user = seach_user(user_id)
+        if not list_seach_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        seach_user_found = list_seach_user[0]
+        save_in_json(results)
+        return seach_user_found
+
+        
+        
